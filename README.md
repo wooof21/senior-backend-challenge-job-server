@@ -4,12 +4,12 @@
 
 Build a job server that allows users to submit asynchronous jobs, processes them by calling an external service, and stores results in a database. The goal is to evaluate your skills in:
 
+- Java
 - Clean architecture (Hexagonal / Ports & Adapters)
 - SOLID principles
 - Async / parallel processing
 - Database modeling with associations
 - Dockerization
-- Vertx
 
 ---
 
@@ -54,6 +54,7 @@ Build a job server that allows users to submit asynchronous jobs, processes them
 ## Non-Functional Requirements / Guidelines
 
 ### Architecture
+- Write the project in Java in the framework of your choice
 - Follow Hexagonal / Ports & Adapters principles.  
 - Apply SOLID principles throughout (SRP, OCP, LSP, ISP, DIP).
 
