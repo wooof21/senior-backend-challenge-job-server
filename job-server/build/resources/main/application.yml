@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: job-server
+
+  r2dbc:
+    url: r2dbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${DB_NAME:jobs}
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PWD:root}
+    pool:
+      enabled: true
+      max-size: 10
+      initial-size: 3
+      max-idle-time: 30m
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:init.sql
+
+external:
+  service:
+    job: http://${EXTERNAL_MOCK_SERVICE:localhost}:8081
+
+resilience4j:
+  timelimiter:
+    instances:
+      externalService:
+        timeoutDuration: 10s
+        cancelRunningFuture: true
+  retry:
+    instances:
+      externalService:
+        maxAttempts: 3
+        waitDuration: 1s
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+        retryExceptions:
+          - com.exmple.jobserver.domian.exceptions.ExternalServiceException
+          - java.io.IOException
+  circuitbreaker:
+    instances:
+      externalService:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        recordExceptions:
+          - com.exmple.jobserver.domian.exceptions.ExternalServiceException
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+server:
+  port: 8080

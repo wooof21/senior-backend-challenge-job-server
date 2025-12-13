@@ -15,7 +15,7 @@ def process():
         return jsonify({"error": "Missing 'jobId' field"}), 400
 
     # Simulate slow processing
-    time.sleep(3)
+    time.sleep(5)
 
     # Return random job result
     return jsonify({
