@@ -22,7 +22,6 @@ configurations {
 
 repositories {
     mavenCentral()
-    maven { url = 'https://repo.spring.io/snapshot' }
 }
 
 dependencies {
@@ -38,10 +37,11 @@ dependencies {
     implementation("io.asyncer:r2dbc-mysql:1.4.0")
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.3.0'
     implementation 'io.github.resilience4j:resilience4j-reactor:2.3.0'
-    implementation 'io.github.resilience4j:resilience4j-circuitbreaker:2.3.0'
-    implementation 'io.github.resilience4j:resilience4j-timelimiter:2.3.0'
-    implementation 'io.github.resilience4j:resilience4j-retry:2.3.0'
+
+    //OpenAPI
+    implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.14"
 }
 
 tasks.named('test') {

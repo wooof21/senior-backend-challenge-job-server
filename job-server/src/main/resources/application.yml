@@ -18,14 +18,15 @@ spring:
 
 external:
   service:
-    job: http://${EXTERNAL_MOCK_SERVICE:localhost}:8081
+    job:
+      base-url: http://${EXTERNAL_MOCK_SERVICE:localhost}:8081
+      timeout:
+        connect: 3s #TCP connection timeout
+        response: 10s #total time to first response
+        read: 10s #read/write - data transfer
+        write: 10s
 
 resilience4j:
-  timelimiter:
-    instances:
-      externalService:
-        timeoutDuration: 10s
-        cancelRunningFuture: true
   retry:
     instances:
       externalService:
@@ -34,8 +35,9 @@ resilience4j:
         enableExponentialBackoff: true
         exponentialBackoffMultiplier: 2
         retryExceptions:
-          - com.exmple.jobserver.domian.exceptions.ExternalServiceException
-          - java.io.IOException
+          - org.springframework.web.reactive.function.client.WebClientResponseException
+          - io.netty.channel.ConnectTimeoutException
+          - io.netty.handler.timeout.ReadTimeoutException
   circuitbreaker:
     instances:
       externalService:
@@ -46,9 +48,22 @@ resilience4j:
         waitDurationInOpenState: 10s
         permittedNumberOfCallsInHalfOpenState: 3
         automaticTransitionFromOpenToHalfOpenEnabled: true
-        recordExceptions:
-          - com.exmple.jobserver.domian.exceptions.ExternalServiceException
-          - java.io.IOException
-          - java.util.concurrent.TimeoutException
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    tags:
+      application: job-server
+
 server:
   port: 8080
+
+logging:
+  level:
+    io.github.resilience4j.retry: DEBUG
+    io.github.resilience4j.retry.internal: DEBUG
+    io.github.resilience4j.circuitbreaker: DEBUG
+

@@ -24,24 +24,24 @@ services:
     ports:
       - "8081:8081"
 
-#  job-server:
-#    build:
-#      context: ./job-server
-#      dockerfile: src/main/resources/Dockerfile
-#    depends_on:
-#      mysql-db:
-#        condition: service_healthy
-#      mock-external:
-#        condition: service_started
-#    environment:
-#      EXTERNAL_MOCK_SERVICE: mock-external
-#      MYSQL_HOST: mysql-db
-#      MYSQL_PORT: 3306
-#      DB_NAME: jobs
-#      MYSQL_USER: root
-#      MYSQL_PWD: root
-#    ports:
-#      - "8080:8080"
+  job-server:
+    build:
+      context: ./job-server
+      dockerfile: src/main/resources/Dockerfile
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      mock-external:
+        condition: service_started
+    environment:
+      EXTERNAL_MOCK_SERVICE: mock-external
+      MYSQL_HOST: mysql-db
+      MYSQL_PORT: 3306
+      DB_NAME: jobs
+      MYSQL_USER: root
+      MYSQL_PWD: root
+    ports:
+      - "8080:8080"
 
 
 volumes:

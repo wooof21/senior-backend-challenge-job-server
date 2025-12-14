@@ -1,0 +1,302 @@
+{
+	"info": {
+		"_postman_id": "11684666-4b62-4064-a1b4-40d981b52dfd",
+		"name": "Assessment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1663130"
+	},
+	"item": [
+		{
+			"name": "Retry",
+			"item": [
+				{
+					"name": "Step 1: Fail First 2 times",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/control/fail/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"control",
+								"fail",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Step 2: Submit a job",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"jobId\": \"1111\",\r\n    \"userId\": \"user123\",\r\n    \"projectId\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/jobs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"jobs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Reset Mock Service",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/control/reset",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"control",
+								"reset"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Circuit Breaker",
+			"item": [
+				{
+					"name": "Step 1: Enable always-fail mode",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/control/always_fail",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"control",
+								"always_fail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Step 2: Submit a job repeatedly",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let count = pm.environment.get(\"count\");\r",
+									"if (!count) {\r",
+									"  count = 0;\r",
+									"}\r",
+									"count = parseInt(count) + 1;\r",
+									"\r",
+									"// stop after 5\r",
+									"if (count > 5) {\r",
+									"  pm.environment.unset(\"count\");\r",
+									"  postman.setNextRequest(null);\r",
+									"  console.log(\"Finished sending 5 requests\");\r",
+									"  return;\r",
+									"}\r",
+									"\r",
+									"// generate unique jobId\r",
+									"const jobId = `job-${count}-${Date.now()}`;\r",
+									"pm.environment.set(\"jobId\", jobId);\r",
+									"pm.environment.set(\"count\", count);\r",
+									"\r",
+									"console.log(`Sending request ${count} with jobId ${jobId}`);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"jobId\": \"{{jobId}}\",\r\n    \"userId\": \"user123\",\r\n    \"projectId\": \"p-1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/jobs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"jobs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Reset Mock Service Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/control/reset",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"control",
+								"reset"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jobId\": \"123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/process",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"process"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Job",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jobId\": \"1234\",\r\n    \"userId\": \"user123\",\r\n    \"projectId\": \"p-1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/jobs",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jobs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search Job",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jobId\": \"1122223\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/jobs/1234",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jobs",
+						"1234"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

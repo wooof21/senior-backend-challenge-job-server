@@ -33,8 +33,16 @@ public class JobDBClient implements JobContract {
                     curr.setStatus(job.getStatus().name());
                     curr.setValue(job.getValue());
                     curr.setError(job.getError());
+                    if (job.getProject() != null) {
+                        curr.setProjectId(job.getProject().getProjectId());
+                    }
                     return repo.save(curr);
                 })
                 .map(EntityMapper::fromJobEntity);
+    }
+
+    @Override
+    public Mono<Boolean> existById(String jobId) {
+        return repo.existsById(jobId);
     }
 }

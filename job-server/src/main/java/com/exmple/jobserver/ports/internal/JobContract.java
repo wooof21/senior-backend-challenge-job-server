@@ -8,4 +8,5 @@ public interface JobContract {
     Mono<Job> saveJob(Job job);
     Mono<Job> findJobById(String jobId);
     Mono<Job> updateJob(Job job);
+    Mono<Boolean> existById(String jobId);
 }
